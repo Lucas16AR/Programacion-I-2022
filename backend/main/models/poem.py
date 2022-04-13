@@ -1,11 +1,13 @@
+from email.policy import default
 from .. import db
+from sqlalchemy.sql import func
 
 class Poem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    userID = db.Column(db.Integer(100), nullable=False)
+    userID = db.Column(db.Integer, nullable=False)
     body = db.Column(db.String(100), nullable=False)
-    dateTime = db.Column(db.String(100), nullable=False)
+    dateTime = db.Column(db.DateTime(timezone=True), default=func.now())
 
     def __repr__(self):
         return '<Poem: %r %r >' % (self.id, self.title, self.userID, self.body, self.dateTime)
