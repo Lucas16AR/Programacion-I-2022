@@ -2,10 +2,10 @@ from .. import db
 
 class Mark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    score = db.Column(db.Intiger, nullable=False)
+    score = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.String(100), nullable=False)
-    userID = db.Column(db.Intiger, nullable=False)
-    poemaID = db.Column(db.Intiger, nullable=False)
+    userID = db.Column(db.Integer, nullable=False)
+    poemaID = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return '<Mark: %r %r %r %r >' % (self.id, self.score, self.comment, self.userID, self.poemaID)

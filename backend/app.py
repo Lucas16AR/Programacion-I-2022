@@ -1,5 +1,6 @@
 import os
 from main import create_app
+from main import db
 
 app = create_app()
 app.app_context().push()
