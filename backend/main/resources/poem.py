@@ -3,15 +3,6 @@ from flask import request, jsonify
 from .. import db
 from main.models import PoemModel
 
-
-POEMS = {
-    1: {'poemas': 'el lirico'},
-    2: {'poemas': 'yo creo'},
-    3: {'poemas': 'listo'},
-    4: {'poemas': 'reus'},
-    5: {'poemas': 'elpa'}
-}
-
 '''
 /poemas/                /poema/<id>
 /calificaciones/        /calificacion/<id>

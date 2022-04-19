@@ -3,11 +3,6 @@ from flask import jsonify, request
 from .. import db
 from main.models import UserModel
 
-USERS = {
-    1: {'firstname': 'Lucas', 'lastname': 'Galdame'},
-    2: {'firsname': 'Matias', 'lastname': 'Vilches'}
-}
-
 '''
 /poemas/                /poema/<id>
 /calificaciones/        /calificacion/<id>

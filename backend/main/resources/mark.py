@@ -3,14 +3,6 @@ from flask import jsonify, request
 from .. import db
 from main.models import MarkModel
 
-MARKS = {
-    1: {'calificacion': 8.1},
-    2: {'calificacion': 10},
-    3: {'calificacion': 9.1},
-    4: {'calificacion': 5.6},
-    5: {'calificacion': 6.7}
-}
-
 '''
 /poemas/                /poema/<id>
 /calificaciones/        /calificacion/<id>
