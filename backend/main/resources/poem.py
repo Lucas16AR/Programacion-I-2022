@@ -55,12 +55,14 @@ class Poems(Resource):
                     poems = poems.filter(PoemModel.user_id == value)
                 if key == "user_name":
                     poems = poems.filter(PoemModel.user_name.has(UserModel.user_name.like('%'+value+'%')))
+                
                 if key == "created[gt]":
                     poems = poems.filter(PoemModel.date_time >= datetime.strptime(value, '%d-%m-%Y'))
                 if key == "created[lt]":
                     poems = poems.filter(PoemModel.date_time <= datetime.strptime(value, '%d-%m-%Y'))
 
                 if key == "sort_by":
+                
                     if value == "author":
                         poems = poems.order_by(PoemModel.author)
                     if value == "author[desc]":

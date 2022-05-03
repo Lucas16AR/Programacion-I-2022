@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import Comment
 from flask_restful import Resource
 from flask import jsonify, request
 from .. import db
@@ -31,8 +32,50 @@ class Mark(Resource):
 
 class Marks(Resource):
     def get(self):
+
         marks = db.session.query(MarkModel).all()
-        return jsonify([mark.to_json() for mark in marks])
+        page = 1
+        per_page = 20
+
+        if request.get_json():
+            filters = request.get_json().items()
+            for key, value in filters:
+
+                if key == "page":
+                    page = int(value)
+                if key == "per_page":
+                    per_page = int(value)
+                if key == "mark":
+                    mark = mark.filter(MarkModel.mark == value)
+                if key == "comment":
+                    comment = comment.filter(MarkModel.comment.like("%" + value + "%"))
+                if key == "user":
+                    userId = userId.filter(MarkModel.userId == value)
+                if key == "poema":
+                    poemId = poemId.filter(MarkModel.poemId == value)
+                
+                if key == "sort_by":
+                    if value == "mark":
+                        mark = mark.order_by(MarkModel.mark)
+                    if value == "mark[desc]":
+                        mark = mark.order_by(MarkModel.puntaje.desc())
+                    if value == "user":
+                        user = user.order_by(MarkModel.userId)
+                    if value == "user[des]":
+                        user = user.order_by(MarkModel.userId.desc())
+                    if value == "poem":
+                        poem = poem.order_by(MarkModel.poemId)
+                    if value == "poem[des]":
+                        poem = poem.order_by(MarkModel.poemId.desc())
+        
+        marks = marks.paginate(page, per_page, False, 30)
+ 
+        return jsonify([{
+                "marks" : [mark.to_json_short() for mark in marks.items],
+                "total" : marks.total,
+                "pages" : marks.pages,
+                "page" : page
+                }])
 
     def post(self):
         mark = MarkModel.from_json(request.get_json())

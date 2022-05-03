@@ -45,24 +45,24 @@ class Users(Resource):
             
             for key, value in filters:
                 
-                if key =="page":
-                    page = int(value)
-                if key == "per_page":
-                    per_page = int(value)
                 if key == "name":
-                    users=users.filter(UserModel.name.like("%"+value+"%"))
+                    users = users.filter(UserModel.name.like("%"+value+"%"))
+                if key == "email":
+                    email = email.filter(UserModel.email.like("%"+value+"%"))
                 
                 if key == "sort_by":
-                
+
                     if key == "name":
-                        users=users.filter(UserModel.name.like("%"+value+"%"))
-                    if value == "id_poems[desc]":
-                        users=users.outerjoin(UserModel.projects).group_by(UserModel.id).order_by(func.count(UserModel.id).desc())
+                        users = users.order_by(UserModel.name)              
+                    if value == "num_poems[desc]":
+                        users=users.outerjoin(UserModel.poems).group_by(UserModel.id).order_by(func.count(UserModel.id).desc())
                     if value == "num_poems":
-                        users=users.outerjoin(UserModel.projects).group_by(UserModel.id).order_by(func.count(UserModel.id))
+                        print("Incluido")
+                        users=users.outerjoin(UserModel.poems).group_by(UserModel.id).order_by(func.count(UserModel.id))
                     if value == "num_marks":
-                        users=users.outerjoin(UserModel.firstname)
-        
+                        print("Incluido")
+                        users=users.outerjoin(UserModel.marks).group_by(UserModel.id).order_by(func.count(UserModel.id).desc())
+                        
         users = users.paginate(page, per_page, False, 30)
                 
         return jsonify({
