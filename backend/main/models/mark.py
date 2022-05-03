@@ -15,12 +15,16 @@ class Mark(db.Model):
         return '<Mark: %r %r %r %r >' % (self.id, self.score, self.comment, self.userID, self.poemaID)
 
     def to_json(self):
+        poem = poem.to_json()
+        user = [users.to_json() for users in self.user.all()]
         mark_json = {
             'id': self.id,
             'score': str(self.score),
             'comment': str(self.comment),
             'userID': str(self.userID),
-            'poemaID': str(self.poemaID)
+            'poemaID': str(self.poemaID),
+            'poem': poem,
+            'user': user
         }
         return mark_json
     

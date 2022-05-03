@@ -14,13 +14,17 @@ class User(db.Model):
         return '<User: %r %r %r %r >' % (self.id, self.firstname, self.password, self.role, self.email)
 
     def to_json(self):
+        marks = [marks.to_json() for mark in self.marks]
+        poems = [poems.to_json() for poem in self.poems]
+
         user_json = {
             'id': self.id,
             'firstname': str(self.firstname),
             'password': str(self.password),
             'role': str(self.role),
             'email': str(self.email),
-
+            'marks': marks,
+            'poems': poems
         }
         return user_json
     
