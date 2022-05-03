@@ -14,8 +14,12 @@ class User(db.Model):
         return '<User: %r %r %r %r >' % (self.id, self.firstname, self.password, self.role, self.email)
 
     def to_json(self):
-        marks = [marks.to_json() for mark in self.marks]
-        poems = [poems.to_json() for poem in self.poems]
+        marks = [marks.to_json() for marks in self.marks]
+        poems = [poems.to_json() for poems in self.poems]
+
+        mean_y = 0
+        if len(self.projects)>0:
+            mean_y = mean([project.year for project in self.projects])
 
         user_json = {
             'id': self.id,
