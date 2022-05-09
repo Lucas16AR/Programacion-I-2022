@@ -1,21 +1,16 @@
 from flask_restful import Resource
 from flask import request, jsonify
 from .. import db
-from main.models import PoemModel, UserModel
-import datetime
+from main.models import PoemModel, UserModel, UserModel
+from datetime import * 
 from sqlalchemy import func
 
-
-'''
-/poemas/                /poema/<id>
-/calificaciones/        /calificacion/<id>
-/usuarios/              /usuario/<id>
-'''
+####################################################################################
 
 class Poem(Resource):
 
     def get(self, id):
-        poem = db.session.query(PoemModel).get_or_404(id)
+        poem = db.session.query(PoemModel).get_or_404(int(id))
         return poem.to_json()
 
     def delete(self, id):
@@ -33,6 +28,7 @@ class Poem(Resource):
         db.session.commit()
         return poem.to_json(), 201 
 
+########################################################################################
 class Poems(Resource):
 
     def get(self):
@@ -52,28 +48,26 @@ class Poems(Resource):
                 if key == "title":
                     poems = poems.filter(PoemModel.title.like('%'+value+'%'))
                 if key == "user_id":
-                    poems = poems.filter(PoemModel.user_id == value)
-                if key == "user_name":
-                    poems = poems.filter(PoemModel.user_name.has(UserModel.user_name.like('%'+value+'%')))
-                
+                    poems = poems.filter(PoemModel.user_id == value)             
                 if key == "created[gt]":
-                    poems = poems.filter(PoemModel.date_time >= datetime.strptime(value, '%d-%m-%Y'))
+                    poems = poems.filter(PoemModel.dateTime >= datetime.strptime(value, '%d-%m-%Y'))
                 if key == "created[lt]":
-                    poems = poems.filter(PoemModel.date_time <= datetime.strptime(value, '%d-%m-%Y'))
+                    poems = poems.filter(PoemModel.dateTime <= datetime.strptime(value, '%d-%m-%Y'))
 
                 if key == "sort_by":
                 
-                    if value == "author":
-                        poems = poems.order_by(PoemModel.author)
-                    if value == "author[desc]":
-                        poems = poems.order_by(PoemModel.author.desc())
-                    if value == "date":
-                        poems == poems.order_by(PoemModel.date)
-                    if value == "date[desc]":
-                        poems = poems.order_by(PoemModel.date.desc())
-                    if value == "mark":
+                    if value == "userId":
+                        poems = poems.order_by(PoemModel.user)
+                    if value == "userID[desc]":
+                        poems = poems.order_by(PoemModel.userID.desc())
+                    
+                    if value == "dateTime":
+                        poems == poems.order_by(PoemModel.dateTime)
+                    if value == "dateTime[desc]":
+                        poems = poems.order_by(PoemModel.dateTime.desc())
+                    if value == "marks":
                         poems = poems.outerjoin(PoemModel.marks).group_by(PoemModel.id).order_by(func.avg(PoemModel.score))
-                    if value == "mark[desc]":
+                    if value == "marks[desc]":
                         poems = poems.outerjoin(PoemModel.marks).group_by(PoemModel.id).order_by(func.avg(PoemModel.score).desc())
         
         poems = poems.paginate(page, per_page, False, 30)
@@ -91,3 +85,4 @@ class Poems(Resource):
         db.session.add(poem)
         db.session.commit()
         return poem.to_json(), 201
+        return 201 

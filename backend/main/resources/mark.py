@@ -4,11 +4,7 @@ from flask import jsonify, request
 from .. import db
 from main.models import MarkModel
 
-'''
-/poemas/                /poema/<id>
-/calificaciones/        /calificacion/<id>
-/usuarios/              /usuario/<id>
-'''
+############################################################################################
 
 class Mark(Resource):
 
@@ -30,7 +26,10 @@ class Mark(Resource):
         db.session.add(mark)
         return mark.to_json(), 201
 
+###############################################################################################
+
 class Marks(Resource):
+
     def get(self):
 
         marks = db.session.query(MarkModel).all()
@@ -49,23 +48,23 @@ class Marks(Resource):
                     mark = mark.filter(MarkModel.mark == value)
                 if key == "comment":
                     comment = comment.filter(MarkModel.comment.like("%" + value + "%"))
-                if key == "user":
-                    userId = userId.filter(MarkModel.userId == value)
-                if key == "poema":
-                    poemId = poemId.filter(MarkModel.poemId == value)
+                if key == "userID":
+                    userID = userID.filter(MarkModel.userID == value)
+                if key == "poemID":
+                    poemId = poemId.filter(MarkModel.poemID == value)
                 
                 if key == "sort_by":
                     if value == "mark":
                         mark = mark.order_by(MarkModel.mark)
                     if value == "mark[desc]":
                         mark = mark.order_by(MarkModel.puntaje.desc())
-                    if value == "user":
-                        user = user.order_by(MarkModel.userId)
-                    if value == "user[des]":
-                        user = user.order_by(MarkModel.userId.desc())
-                    if value == "poem":
+                    if value == "userID":
+                        user = user.order_by(MarkModel.userID)
+                    if value == "userID[des]":
+                        user = user.order_by(MarkModel.userID.desc())
+                    if value == "poemID":
                         poem = poem.order_by(MarkModel.poemId)
-                    if value == "poem[des]":
+                    if value == "poemID[des]":
                         poem = poem.order_by(MarkModel.poemId.desc())
         
         marks = marks.paginate(page, per_page, False, 30)

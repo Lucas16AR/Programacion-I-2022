@@ -1,5 +1,6 @@
 from .. import db
 
+##################################################################################################################
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String(100), nullable=False)
@@ -11,24 +12,24 @@ class User(db.Model):
     poem = db.relationship('Poem', back_populates = 'user', cascade = "all, delete-orphan")
 
     def __repr__(self):
-        return '<User: %r %r %r %r >' % (self.id, self.firstname, self.password, self.role, self.email)
+        # return '<User: %r %r %r %r >' % (self.id, self.firstname, self.password, self.role, self.email)
+        return f"""
+{self.id}
+{self.firstname}
+{self.password}
+{self.role}
+{self.email}
+        """
+
+##################################################################################################################
 
     def to_json(self):
-        marks = [marks.to_json() for marks in self.marks]
-        poems = [poems.to_json() for poems in self.poems]
-
-        mean_y = 0
-        if len(self.projects)>0:
-            mean_y = mean([project.year for project in self.projects])
-
         user_json = {
             'id': self.id,
             'firstname': str(self.firstname),
-            'password': str(self.password),
-            'role': str(self.role),
-            'email': str(self.email),
-            'marks': marks,
-            'poems': poems
+            'num_poems': len(self.poem),
+            'num_marks': len(self.mark),
+            'poems': [poem.to_json() for poem in self.poem]
         }
         return user_json
     
@@ -42,6 +43,7 @@ class User(db.Model):
     def to_json_complete(self):
         poem = [poem.to_json() for poem in self.poem]
         mark = [mark.to_json() for mark in self.mark]
+        
         user_json = {
             'id': self.id,
             'name': str(self.name),
@@ -53,8 +55,9 @@ class User(db.Model):
         }
         return user_json
 
-    @staticmethod
+###########################################################################################
 
+    @staticmethod
     def from_json(user_json):
         id = user_json.get('id')
         firstname = user_json.get('firstname')

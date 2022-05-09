@@ -1,14 +1,11 @@
 from flask_restful import Resource
 from flask import jsonify, request
 from .. import db
-from main.models import UserModel
+from main.models import UserModel 
 from sqlalchemy import func
+from datetime import *
 
-'''
-/poemas/                /poema/<id>
-/calificaciones/        /calificacion/<id>
-/usuarios/              /usuario/<id>
-'''
+############################################################################################
 
 class User(Resource):
 
@@ -31,6 +28,7 @@ class User(Resource):
         db.session.commit()
         return user.to_json(), 201
 
+##############################################################################################
 
 class Users(Resource):
 
@@ -46,23 +44,22 @@ class Users(Resource):
             for key, value in filters:
                 
                 if key == "name":
-                    users = users.filter(UserModel.name.like("%"+value+"%"))
+                    users = users.filters(UserModel.name.like('%'+value+'%'))
                 if key == "email":
-                    email = email.filter(UserModel.email.like("%"+value+"%"))
+                    email = email.filters(UserModel.email.like('%'+value+'%'))
                 
                 if key == "sort_by":
 
                     if key == "name":
                         users = users.order_by(UserModel.name)              
-                    if value == "num_poems[desc]":
-                        users=users.outerjoin(UserModel.poems).group_by(UserModel.id).order_by(func.count(UserModel.id).desc())
-                    if value == "num_poems":
-                        print("Incluido")
-                        users=users.outerjoin(UserModel.poems).group_by(UserModel.id).order_by(func.count(UserModel.id))
-                    if value == "num_marks":
-                        print("Incluido")
-                        users=users.outerjoin(UserModel.marks).group_by(UserModel.id).order_by(func.count(UserModel.id).desc())
-                        
+                    if value == "name[desc]":
+                        name = name.order_by(UserModel.name.desc())
+                    if key == "email":
+                        email = email.order_by(UserModel.name)              
+                    if value == "email[desc]":
+                        email = email.order_by(UserModel.email.desc())
+
+
         users = users.paginate(page, per_page, False, 30)
                 
         return jsonify({
@@ -71,9 +68,6 @@ class Users(Resource):
                 'pages': users.pages,
                 'page': page
                 })
-
-
-
 
     def post(self):
         user = UserModel.from_json(request.get_json())
