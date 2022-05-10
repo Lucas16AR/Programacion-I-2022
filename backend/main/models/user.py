@@ -1,4 +1,5 @@
 from .. import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 ##################################################################################################################
 class User(db.Model):
@@ -10,6 +11,20 @@ class User(db.Model):
 
     mark = db.relationship('Mark', back_populates = 'user', cascade = "all, delete-orphan")
     poem = db.relationship('Poem', back_populates = 'user', cascade = "all, delete-orphan")
+
+    
+    @property
+    def plain_password(self):
+        raise AttributeError('Password cant be read')
+
+    @plain_password.setter
+    def plain_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def validate_pass(self, password):
+        return check_password_hash(self.password, password)
+
+###################################################################################################################
 
     def __repr__(self):
         # return '<User: %r %r %r %r >' % (self.id, self.firstname, self.password, self.role, self.email)
