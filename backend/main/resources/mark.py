@@ -3,79 +3,55 @@ from flask_restful import Resource
 from flask import jsonify, request
 from .. import db
 from main.models import MarkModel
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 ############################################################################################
 
 class Mark(Resource):
 
+    @jwt_required()
     def get(self, id):
         mark = db.session.query(MarkModel).get_or_404(id)
         return mark.to_json()
 
+    @jwt_required()
     def delete(self, id):
+        claims = get_jwt()
+        user_id = get_jwt_identity
         mark = db.session.query(MarkModel).get_or_404(id)
-        db.session.delete(mark)
-        db.session.commit()
-        return '', 201
+        if 'role' in claims:
+            if claims['role'] == 'admin' or user_id == mark.user_id:
+                db.session.delete(mark)
+                db.session.commit()
+                return '', 204
+            else:
+                return 'Only admin and poets are allowed to delete marks'
         
+    @jwt_required()
     def put(self, id):
+        user_id = get_jwt_identity()
         mark = db.session.query(MarkModel).get_or_404(id)
-        data = request.get_json().items()
-        for key, value in data:
-            setattr(mark, key, value)
-        db.session.add(mark)
-        return mark.to_json(), 201
+        if user_id == mark.user_id:
+            data = request.get_json().items()
+            for key, value in data:
+                setattr(mark, key, value)
+            db.session.add(mark)
+            db.session.commit()
+            return mark.to_json(), 201
+        else:
+            return 'Only admin and poets are allowed to update marks'
 
 ###############################################################################################
 
 class Marks(Resource):
 
+    @jwt_required()
     def get(self):
-
         marks = db.session.query(MarkModel).all()
-        page = 1
-        per_page = 20
+        return jsonify({[mark.to_json() for mark in marks]})
 
-        if request.get_json():
-            filters = request.get_json().items()
-            for key, value in filters:
 
-                if key == "page":
-                    page = int(value)
-                if key == "per_page":
-                    per_page = int(value)
-                if key == "mark":
-                    mark = mark.filter(MarkModel.mark == value)
-                if key == "comment":
-                    comment = comment.filter(MarkModel.comment.like("%" + value + "%"))
-                if key == "userID":
-                    userID = userID.filter(MarkModel.userID == value)
-                if key == "poemID":
-                    poemId = poemId.filter(MarkModel.poemID == value)
-                
-                if key == "sort_by":
-                    if value == "mark":
-                        mark = mark.order_by(MarkModel.mark)
-                    if value == "mark[desc]":
-                        mark = mark.order_by(MarkModel.puntaje.desc())
-                    if value == "userID":
-                        user = user.order_by(MarkModel.userID)
-                    if value == "userID[des]":
-                        user = user.order_by(MarkModel.userID.desc())
-                    if value == "poemID":
-                        poem = poem.order_by(MarkModel.poemId)
-                    if value == "poemID[des]":
-                        poem = poem.order_by(MarkModel.poemId.desc())
-        
-        marks = marks.paginate(page, per_page, False, 30)
- 
-        return jsonify([{
-                "marks" : [mark.to_json_short() for mark in marks.items],
-                "total" : marks.total,
-                "pages" : marks.pages,
-                "page" : page
-                }])
-
+    @jwt_required()
     def post(self):
         mark = MarkModel.from_json(request.get_json())
         db.session.add(mark)

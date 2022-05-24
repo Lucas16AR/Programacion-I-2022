@@ -26,10 +26,8 @@ class Poem(db.Model):
     
     def avg_score(self):
         scoreboard = []
-        
         if len(self.mark) == 0:
             mean = 0
-        
         else:
             for mark in self.mark:
                 score = mark.score

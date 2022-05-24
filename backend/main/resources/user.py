@@ -5,25 +5,25 @@ from main.models import UserModel
 from sqlalchemy import func
 from datetime import *
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from main.auth.decorators import admin_required
+from main.auth.decorator import admin_required
 
 ############################################################################################
 
 class User(Resource):
 
-    @jwt_required()
+    @jwt_required
     def get(self, id):
         user = db.session.query(UserModel).get_or_404(id)
         return user.to_json()
 
-    @admin_required()
+    @admin_required
     def delete(self, id):
         user = db.session.query(UserModel).get_or_404(id)
         db.session.delete(user)
         db.session.commit()
         return '', 204
 
-    @jwt_required()
+    @jwt_required
     def put(self, id):
         user = db.session.query(UserModel).get_or_404(id)
         data = request.get_json().items()
@@ -37,7 +37,7 @@ class User(Resource):
 
 class Users(Resource):
 
-    @jwt_required()
+    @admin_required
     def get(self):
         
         page = 1
@@ -53,9 +53,7 @@ class Users(Resource):
                     users = users.filters(UserModel.name.like('%'+value+'%'))
                 if key == "email":
                     email = email.filters(UserModel.email.like('%'+value+'%'))
-                
                 if key == "sort_by":
-
                     if key == "name":
                         users = users.order_by(UserModel.name)              
                     if value == "name[desc]":
