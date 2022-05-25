@@ -6,6 +6,7 @@ from main.models import PoemModel, UserModel, UserModel
 from datetime import * 
 from sqlalchemy import func
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from main.auth.decorator import poem_required, admin_or_poem_required
 
 
 ####################################################################################
@@ -106,7 +107,7 @@ class Poems(Resource):
                 "page": page
                 })
 
-    @jwt_required()
+    @poem_required()
     def post(self):
         user_id = get_jwt_identity()
         poem = PoemModel.from_json(request.get_json())

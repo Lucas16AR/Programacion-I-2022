@@ -15,7 +15,7 @@ def admin_required(fn):
             return 'Only admins can access', 403
     return wrapper
 
-def poet_required(fn):
+def poem_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         verify_jwt_in_request()
@@ -26,7 +26,7 @@ def poet_required(fn):
             return 'Only poets can access', 403       
     return wrapper
 
-def admin_or_poet_required(fn):
+def admin_or_poem_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         verify_jwt_in_request()

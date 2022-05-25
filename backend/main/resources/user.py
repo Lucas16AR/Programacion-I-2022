@@ -5,7 +5,7 @@ from main.models import UserModel
 from sqlalchemy import func
 from datetime import *
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from main.auth.decorator import admin_required
+from main.auth.decorator import admin_required, admin_or_poem_required
 
 ############################################################################################
 
@@ -37,18 +37,14 @@ class User(Resource):
 
 class Users(Resource):
 
-    @admin_required
+    @admin_required()
     def get(self):
-        
         page = 1
         per_page = 20
         users = db.session.query(UserModel).all()
-        
         if request.get_json():
             filters = request.get_json().items()
-            
             for key, value in filters:
-                
                 if key == "name":
                     users = users.filters(UserModel.name.like('%'+value+'%'))
                 if key == "email":
@@ -62,7 +58,6 @@ class Users(Resource):
                         email = email.order_by(UserModel.name)              
                     if value == "email[desc]":
                         email = email.order_by(UserModel.email.desc())
-
 
         users = users.paginate(page, per_page, False, 30)
                 
